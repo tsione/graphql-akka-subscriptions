@@ -1,10 +1,14 @@
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
+import com.google.inject.Guice
+import guice.bindings.AkkaBinding
+import net.codingwell.scalaguice.InjectorExtensions._
 import routes.GraphQLRoutes.routes
 
 object Main extends App {
-  implicit val system: ActorSystem = ActorSystem("akka-quickstart-scala")
-  implicit val materializer: ActorMaterializer = ActorMaterializer()
+  val injector = Guice.createInjector(new AkkaBinding())
+  implicit val system: ActorSystem = injector.instance[ActorSystem]
+  implicit val materializer: ActorMaterializer = injector.instance[ActorMaterializer]
   Http().bindAndHandle(routes, "localhost", 9000)
 }
