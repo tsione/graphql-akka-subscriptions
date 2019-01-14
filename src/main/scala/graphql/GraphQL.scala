@@ -2,10 +2,10 @@ package graphql
 
 import com.google.inject.Inject
 import graphql.schemas.PostSchema
-import sangria.schema.{ObjectType, fields}
+import sangria.schema.{ObjectType, Schema, fields}
 
 class GraphQL @Inject()(postSchema: PostSchema) {
-  val Schema = sangria.schema.Schema(
+  val schema: Schema[Unit, Unit] = sangria.schema.Schema(
     query = ObjectType("Query",
       fields(
         postSchema.Queries: _*
