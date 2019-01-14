@@ -13,5 +13,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-stream" % akkaVersion,
   "org.scalatest" %% "scalatest" % "3.0.5" % "test",
   "com.google.inject" % "guice" % "4.1.0",
-  "net.codingwell" %% "scala-guice" % "4.2.1"
+  "net.codingwell" %% "scala-guice" % "4.2.1",
+  "org.sangria-graphql" %% "sangria-play-json" % "1.0.5",
+  "org.sangria-graphql" %% "sangria" % "1.4.2"
 )
