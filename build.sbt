@@ -15,5 +15,8 @@ libraryDependencies ++= Seq(
   "com.google.inject" % "guice" % "4.1.0",
   "net.codingwell" %% "scala-guice" % "4.2.1",
   "org.sangria-graphql" %% "sangria-play-json" % "1.0.5",
-  "org.sangria-graphql" %% "sangria" % "1.4.2"
+  "org.sangria-graphql" %% "sangria" % "1.4.2",
+  "org.sangria-graphql" %% "sangria-spray-json" % "1.0.1",
+  "org.sangria-graphql" %% "sangria-akka-streams" % "1.0.1",
+  "org.sangria-graphql" %% "sangria-monix" % "1.0.0"
 )
