@@ -4,7 +4,7 @@ import akka.stream.ActorMaterializer
 import com.google.inject.Guice
 import guice.bindings.AkkaBinding
 import net.codingwell.scalaguice.InjectorExtensions._
-import routes.GraphQLRoutes.routes
+import routes.graphql.GraphQLRoutes.routes
 
 object Main extends App {
   val injector = Guice.createInjector(new AkkaBinding())
