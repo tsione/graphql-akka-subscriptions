@@ -8,14 +8,14 @@ class GraphQL @Inject()(postSchema: PostSchema) {
   val schema: Schema[Unit, Unit] = sangria.schema.Schema(
     query = ObjectType("Query",
       fields(
-        postSchema.Queries: _*
+        postSchema.queries: _*
       )
     ),
 
     mutation = Some(
       ObjectType("Mutation",
         fields(
-          postSchema.Mutations: _*
+          postSchema.mutations: _*
         )
       )
     )

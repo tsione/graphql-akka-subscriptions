@@ -1,24 +1,32 @@
 package graphql.schemas
 
+import akka.stream.ActorMaterializer
 import com.google.inject.Inject
 import graphql.resolvers.PostResolver
 import models.Post
+import publisher.PubSubService
 import sangria.macros.derive.{ObjectTypeName, deriveObjectType}
 import sangria.schema._
+import sangria.streaming.akkaStreams._
 
-class PostSchema @Inject()(postResolver: PostResolver) {
+import scala.concurrent.ExecutionContext
 
-  implicit val PostType: ObjectType[Unit, Post] = deriveObjectType[Unit, Post](ObjectTypeName("Post"))
+class PostSchema @Inject()(postResolver: PostResolver)
+                          (implicit val pubSubService: PubSubService[Post],
+                           actorMaterializer: ActorMaterializer,
+                           executionContext: ExecutionContext) {
 
-  val Queries: List[Field[Unit, Unit]] = List(
+  implicit val postType: ObjectType[Unit, Post] = deriveObjectType[Unit, Post](ObjectTypeName("Post"))
+
+  val queries: List[Field[Unit, Unit]] = List(
     Field(
       name = "posts",
-      fieldType = ListType(PostType),
+      fieldType = ListType(postType),
       resolve = _ => postResolver.posts
     ),
     Field(
       name = "findPost",
-      fieldType = OptionType(PostType),
+      fieldType = OptionType(postType),
       arguments = List(
         Argument("id", LongType)
       ),
@@ -27,10 +35,10 @@ class PostSchema @Inject()(postResolver: PostResolver) {
           postResolver.findPost(sangriaContext.args.arg[Long]("id"))
     )
   )
-  val Mutations: List[Field[Unit, Unit]] = List(
+  val mutations: List[Field[Unit, Unit]] = List(
     Field(
       name = "addPost",
-      fieldType = PostType,
+      fieldType = postType,
       arguments = List(
         Argument("title", StringType),
         Argument("content", StringType)
@@ -43,7 +51,7 @@ class PostSchema @Inject()(postResolver: PostResolver) {
     ),
     Field(
       name = "updatePost",
-      fieldType = PostType,
+      fieldType = postType,
       arguments = List(
         Argument("id", LongType),
         Argument("title", StringType),
@@ -65,6 +73,13 @@ class PostSchema @Inject()(postResolver: PostResolver) {
       resolve =
         sangriaContext =>
           postResolver.deletePost(sangriaContext.args.arg[Long]("id"))
+    )
+  )
+  val subscriptions: List[Field[Unit, Unit]] = List(
+    Field.subs(
+      name = "postUpdates",
+      fieldType = postType,
+      resolve = _ => pubSubService.subscribe
     )
   )
 }
