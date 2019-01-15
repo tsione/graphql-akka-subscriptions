@@ -23,7 +23,7 @@ import scala.util.{Failure, Success}
 
 class HttpHandler @Inject()(graphQL: GraphQL)
                            (implicit val actorMaterializer: ActorMaterializer,
-                            implicit val scheduler: Scheduler) {
+                            val scheduler: Scheduler) {
   def handleQuery(query: String, operation: Option[String], variables: JsObject = JsObject.empty): StandardRoute =
     QueryParser.parse(query) match {
       case Success(queryAst) =>
