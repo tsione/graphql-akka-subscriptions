@@ -30,7 +30,7 @@ class HttpHandler @Inject()(graphQL: GraphQL)
         queryAst.operationType(operation) match {
           case Some(Subscription) =>
             import sangria.streaming.akkaStreams._
-            complete(Executor.prepare(graphQL.schema, queryAst, operation, variables)
+            complete(Executor.prepare(graphQL.schema, queryAst, (), (), operation, variables)
               .map {
                 preparedQuery =>
                   ToResponseMarshallable(preparedQuery.execute()
@@ -45,7 +45,7 @@ class HttpHandler @Inject()(graphQL: GraphQL)
                 case e: ErrorWithResolver => ToResponseMarshallable(InternalServerError -> e.resolveError)
               })
           case _ =>
-            complete(Executor.execute(graphQL.schema, queryAst, operation, variables).map(OK -> _)
+            complete(Executor.execute(graphQL.schema, queryAst, (), (), operation, variables).map(OK -> _)
               .recover {
                 case e: QueryAnalysisError => BadRequest -> e.resolveError
                 case e: ErrorWithResolver => InternalServerError -> e.resolveError
