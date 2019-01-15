@@ -16,5 +16,5 @@ class PostResolver @Inject()(postRepository: PostRepository)
 
   def updatePost(id: Long, title: String, content: String): Future[Post] = postRepository.update(Post(Some(id), title, content))
 
-  def deletePost(id: Long): Future[Boolean] = postRepository.delete(id)
+  def deletePost(id: Long): Future[Post] = postRepository.delete(id)
 }

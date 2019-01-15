@@ -66,7 +66,7 @@ class PostSchema @Inject()(postResolver: PostResolver)
     ),
     Field(
       name = "deletePost",
-      fieldType = BooleanType,
+      fieldType = postType,
       arguments = List(
         Argument("id", LongType)
       ),

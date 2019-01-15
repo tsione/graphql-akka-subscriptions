@@ -11,5 +11,5 @@ trait Repository[T] {
 
   def update(item: T): Future[T]
 
-  def delete(id: Long): Future[Boolean]
+  def delete(id: Long): Future[T]
 }

@@ -55,14 +55,10 @@ class PostRepository @Inject()(implicit val executionContext: ExecutionContext) 
   }
 
   /** @inheritdoc */
-  override def delete(id: Long): Future[Boolean] = Future.successful {
-    synchronized {
-      postCollection.indexWhere(_.id.contains(id)) match {
-        case -1 => false
-        case personIndex =>
-          postCollection.remove(personIndex)
-          true
-      }
+  override def delete(id: Long): Future[Post] = synchronized {
+    postCollection.indexWhere(_.id.contains(id)) match {
+      case -1 => Future.failed(NotFound(s"Can't find post with id=$id."))
+      case personIndex => Future(postCollection.remove(personIndex))
     }
   }
 }
