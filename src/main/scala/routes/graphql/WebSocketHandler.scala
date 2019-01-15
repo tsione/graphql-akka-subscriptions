@@ -48,7 +48,7 @@ class WebSocketHandler @Inject()(graphQL: GraphQL)
       case Success(queryAst) =>
         queryAst.operationType(None) match {
           case Some(Subscription) =>
-            Executor.execute(graphQL.schema, queryAst, operation, variables)
+            Executor.execute(graphQL.schema, queryAst, (), (), operation, variables)
               .viaMat(killSwitches.flow)(Keep.none)
               .runForeach {
                 result =>
