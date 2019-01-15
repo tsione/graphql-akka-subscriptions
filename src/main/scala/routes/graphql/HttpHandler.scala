@@ -30,34 +30,26 @@ class HttpHandler @Inject()(graphQL: GraphQL)
         queryAst.operationType(operation) match {
           case Some(Subscription) =>
             import sangria.streaming.akkaStreams._
-            complete(Executor.prepare(
-              schema = graphQL.schema,
-              queryAst = queryAst,
-              operationName = operation,
-              variables = variables
-            )
+            complete(Executor.prepare(graphQL.schema, queryAst, operation, variables)
               .map {
                 preparedQuery =>
-                  ToResponseMarshallable(preparedQuery.execute().map(r => ServerSentEvent(r.compactPrint)).recover {
-                    case NonFatal(error) =>
-                      ServerSentEvent(error.getMessage)
-                  })
+                  ToResponseMarshallable(preparedQuery.execute()
+                    .map(r => ServerSentEvent(r.compactPrint))
+                    .recover {
+                      case NonFatal(e) =>
+                        ServerSentEvent(e.getMessage)
+                    })
               }
               .recover {
-                case error: QueryAnalysisError => ToResponseMarshallable(BadRequest -> error.resolveError)
-                case error: ErrorWithResolver => ToResponseMarshallable(InternalServerError -> error.resolveError)
+                case e: QueryAnalysisError => ToResponseMarshallable(BadRequest -> e.resolveError)
+                case e: ErrorWithResolver => ToResponseMarshallable(InternalServerError -> e.resolveError)
               })
           case _ =>
-            complete(ToResponseMarshallable(Executor.execute(
-              schema = graphQL.schema,
-              queryAst = queryAst,
-              operationName = operation,
-              variables = variables
-            ).map(OK -> _)
+            complete(Executor.execute(graphQL.schema, queryAst, operation, variables).map(OK -> _)
               .recover {
-                case error: QueryAnalysisError => BadRequest -> error.resolveError
-                case error: ErrorWithResolver => InternalServerError -> error.resolveError
-              }))
+                case e: QueryAnalysisError => BadRequest -> e.resolveError
+                case e: ErrorWithResolver => InternalServerError -> e.resolveError
+              })
         }
       case Failure(e: SyntaxError) => complete(BadRequest, e.toString)
       case Failure(_) => complete(InternalServerError)
