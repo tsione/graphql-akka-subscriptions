@@ -11,7 +11,6 @@ class PostRepository @Inject()(implicit val executionContext: ExecutionContext) 
 
   val postCollection: mutable.ArrayBuffer[Post] = mutable.ArrayBuffer.empty[Post]
 
-  /** @inheritdoc */
   override def create(post: Post): Future[Post] = synchronized {
     postCollection.find(_.title == post.title).fold {
       Future {
@@ -29,17 +28,14 @@ class PostRepository @Inject()(implicit val executionContext: ExecutionContext) 
     }
   }
 
-  /** @inheritdoc */
   override def find(id: Long): Future[Option[Post]] = Future.successful {
     postCollection.find(_.id.contains(id))
   }
 
-  /** @inheritdoc */
   override def findAll(): Future[List[Post]] = Future.successful {
     postCollection.toList
   }
 
-  /** @inheritdoc */
   override def update(post: Post): Future[Post] = synchronized {
     post.id match {
       case Some(id) =>
@@ -54,7 +50,6 @@ class PostRepository @Inject()(implicit val executionContext: ExecutionContext) 
     }
   }
 
-  /** @inheritdoc */
   override def delete(id: Long): Future[Post] = synchronized {
     postCollection.indexWhere(_.id.contains(id)) match {
       case -1 => Future.failed(NotFound(s"Can't find post with id=$id."))
