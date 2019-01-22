@@ -27,7 +27,9 @@ class WebSocketHandler @Inject()(graphQL: GraphQL)
     val incomingFlow = Flow[Message]
       .collect {
         case TextMessage.Strict(message) =>
+          println(s"Message: $message")
           val (query, operation, variables) = JsonUtils.parseGraphQLQuery(message.parseJson)
+          println(s"Parsed message: $query, $operation, $variables")
           handleGraphQLQuery(query, operation, variables)
       }
       .to {
@@ -46,12 +48,14 @@ class WebSocketHandler @Inject()(graphQL: GraphQL)
     import sangria.streaming.akkaStreams._
     QueryParser.parse(query) match {
       case Success(queryAst) =>
-        queryAst.operationType(None) match {
+        queryAst.operationType(operation) match {
           case Some(Subscription) =>
+            println("Subscription...")
             Executor.execute(graphQL.schema, queryAst, (), (), operation, variables)
               .viaMat(killSwitches.flow)(Keep.none)
               .runForeach {
                 result =>
+                  println(s"Incoming message: $result")
                   reply(result.compactPrint)
               }
           case _ => reply(s"Unsupported type: ${queryAst.operationType(None)}")

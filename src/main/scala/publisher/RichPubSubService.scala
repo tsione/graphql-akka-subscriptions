@@ -8,6 +8,7 @@ object RichPubSubService {
     def pub(implicit pubSubService: PubSubService[T]): Future[T] = {
       element.map {
         publishingElement => {
+          println(s"Publish: $publishingElement")
           pubSubService.publish(publishingElement)
           publishingElement
         }

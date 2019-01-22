@@ -1,7 +1,7 @@
 package graphql.resolvers
 
 import com.google.inject.Inject
-import models.Post
+import models.post.Post
 import repositories.PostRepository
 
 import scala.concurrent.{ExecutionContext, Future}

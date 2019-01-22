@@ -1,8 +1,8 @@
 package repositories
 
 import com.google.inject.Inject
-import models.Post
 import models.errors.{AlreadyExists, NotFound}
+import models.post.Post
 
 import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}

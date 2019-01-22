@@ -11,11 +11,17 @@ class GraphQL @Inject()(postSchema: PostSchema) {
         postSchema.queries: _*
       )
     ),
-
     mutation = Some(
       ObjectType("Mutation",
         fields(
           postSchema.mutations: _*
+        )
+      )
+    ),
+    subscription = Some(
+      ObjectType("Subscription",
+        fields(
+          postSchema.subscriptions: _*
         )
       )
     )
